@@ -4,7 +4,7 @@ import { assets } from '../assets/assets'
 
 const Header = () => {
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-190 overflow-hidden">
       {/* Fullscreen background image */}
       <img
         src={header}
