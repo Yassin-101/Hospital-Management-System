@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const SpecialityMenu = () => {
   return (
-    <div className='flex items-center flex-col gap-4 py-16 text-gray-800'>
+    <div className='flex items-center flex-col gap-4 py-26 text-gray-800'>
       <h1 className='text-4xl '>Seha Specialities</h1>
       <p className='md:w-1/4 text-center text-md'>SEHA takes pride in providing an extensive range of world-class services and sub-specialties,</p>
       <div className='flex sm:justify-center gap-4 pt-5 w-full overflow-scroll '>

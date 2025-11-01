@@ -17,7 +17,7 @@ const Insurance = () => {
   ];
 
   return (
-    <div className="w-full bg-white flex justify-center py-20">
+    <div className="w-full bg-white flex justify-center py-30">
       <div className="max-w-7xl w-full flex flex-col md:flex-row justify-between items-start px-6 md:px-12 gap-10">
         {/* LEFT SIDE */}
         <div className="md:w-1/3">
