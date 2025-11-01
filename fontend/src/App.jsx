@@ -9,6 +9,7 @@ import MyProfile from './Pages/MyProfile'
 import MyAppointments from './Pages/MyAppointments'
 import Appointments from './Pages/Appointments'
 import Navbar from './Components/Navbar'
+import '../src/index.css'
 
 const App = () => {
   return (
