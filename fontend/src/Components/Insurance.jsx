@@ -21,7 +21,7 @@ const Insurance = () => {
       <div className="max-w-7xl w-full flex flex-col md:flex-row justify-between items-start px-6 md:px-12 gap-10">
         {/* LEFT SIDE */}
         <div className="md:w-1/3">
-          <h1 className="text-4xl md:text-6xl font-semibold text-[#0B4A7A] leading-tight">
+          <h1 className="text-4xl md:text-6xl font-semibold text-[#18528f] leading-tight">
             Insurance <br /> Partners
           </h1>
         </div>
@@ -32,7 +32,6 @@ const Insurance = () => {
             <img
               key={index}
               src={partner.logo}
-              alt={partner.name}
               className="h-32 w-auto object-contain grayscale hover:grayscale-0 transition duration-300"
             />
           ))}
