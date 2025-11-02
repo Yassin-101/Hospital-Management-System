@@ -1,18 +1,26 @@
 import React, { useState } from 'react'
 import logo from '../assets/logo.png'
 import { assets } from '../assets/assets'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
   const navigate = useNavigate()
+  const location = useLocation() //  Detect current route
   const [showMenu, SetShowMenu] = useState(false)
   const [token, SetToken] = useState(true)
 
+  // Check if the current page is NOT home
+  const isHomePage = location.pathname === '/'
+
   return (
-    <div className="absolute top-0 left-0 w-full z-20">
-      <div className="flex items-center justify-between text-sm py-4 border-b border-b-gray-600 bg-transparent text-white px-4 sm:px-[10%]">
+    <div className={`absolute top-0 left-0 w-full z-20`}>
+      <div
+        className={`flex items-center justify-between text-sm py-4 border-b border-b-gray-600 px-4 sm:px-[10%] text-white transition-all duration-300 
+        ${isHomePage ? 'bg-transparent' : 'bg-[#18528f]'}  //change background color
+        `}
+      >
         {/* Logo */}
-        <img className="w-30 cursor-pointer" src={logo} alt="Logo" />
+        <img className="w-30 cursor-pointer" src={logo} alt="Logo" onClick={() => navigate('/')} />
 
         {/* Menu Links */}
         <ul className="hidden md:flex items-start gap-5 font-medium text-xl">
@@ -38,7 +46,10 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-            <button onClick={() => navigate('/login')} className="bg-white text-blue-500 px-8 py-3 rounded-full text-lg  hidden cursor-pointer md:block">
+            <button
+              onClick={() => navigate('/login')}
+              className="bg-white text-blue-500 px-8 py-3 rounded-full text-lg hidden cursor-pointer md:block"
+            >
               Create Account
             </button>
           )}
