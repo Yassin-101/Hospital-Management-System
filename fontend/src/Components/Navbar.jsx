@@ -58,18 +58,18 @@ const Navbar = () => {
                   <img className="w-12 rounded-full" src={assets.profile_pic} alt="profile" />
                   <img className="w-4" src={assets.dropdown_icon} alt="dropdown" />
                 </div>
-                <div className="hidden group-hover:block absolute right-0 mt-3 z-60">
-                  <div className="min-w-[180px] bg-stone-100 rounded flex flex-col gap-2 p-3 text-gray-800 shadow-lg">
-                    <button onClick={() => navigate('my-profile')} className="text-left hover:text-black">My Profile</button>
-                    <button onClick={() => navigate('my-appointments')} className="text-left hover:text-black">My Appointments</button>
-                    <button onClick={() => SetToken(false)} className="text-left hover:text-black">Logout</button>
+                <div className="hidden group-hover:block absolute right-0 mt-1 z-60">
+                  <div className="min-w-[180px] bg-stone-100 rounded flex flex-col gap-2 p-3 text-gray-800 shadow-lg cursor-pointer">
+                    <button onClick={() => navigate('my-profile')} className="text-left cursor-pointer hover:text-black hover:font-semibold">My Profile</button>
+                    <button onClick={() => navigate('my-appointments')} className="text-left cursor-pointer hover:text-black hover:font-semibold">My Appointments</button>
+                    <button onClick={() => SetToken(false)} className="text-left cursor-pointer hover:text-black hover:font-semibold">Logout</button>
                   </div>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => navigate('/login')}
-                className="bg-white text-blue-500 px-6 py-2 rounded-full text-lg hidden md:inline-block"
+                className="bg-white text-blue-500 px-6 py-2 cursor-pointer rounded-full text-lg hidden md:inline-block"
               >
                 Create Account
               </button>
