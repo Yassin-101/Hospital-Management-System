@@ -9,18 +9,77 @@ const Appointments = () => {
   const {doctors, currencySymbol} = useContext(AppContext)
 
   const [docInfo,setDocInfo] = useState(null) // to save docInfo
+  const [docSlots,setDocSlots] = useState([])
+  const [slotsIndex,setSlotsIndex] = useState(0)
+  const [slotsTime,setSlotsTime] = useState('')
 
   // find particular doctor from docId
   const fetchDocInfo =  async()=>{
         const docInfo = doctors.find(doc => doc._id === docId)
         setDocInfo(docInfo)
-        console.log(docInfo)
   } 
+
+  // calculate available slots
+
+  const getAvailableSlots = async()=>{
+      setDocSlots([])
+
+      // getting current date
+      let today = new Date()
+      
+      for(let i=0; i< 7;i++){
+        // getting date with index
+        let currentDate = new Date(today)
+        currentDate.setDate(today.getDate()+i)
+
+        // setting end time of the date with index
+        let endTime  = new Date()
+        endTime.setDate(today.getDate()+1)
+        endTime.setHours(21,0,0,0)
+
+        // setting hours
+        if(today.getDate() === currentDate.getDate()){
+          currentDate.setHours(currentDate.getHours() > 10 ? currentDate.getHours()+1: 10)
+          currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0)
+
+        }else{
+          currentDate.setHours(10)
+          currentDate.setMinutes(0)
+        } 
+
+        let timeSlots = []
+
+        while(currentDate < endTime){
+          let formattedTime = currentDate.toLocaleDateString([], { hour: '2-digit', minute: '2-digit'})
+
+          // add slots to array
+          timeSlots.push({
+            dateTime: new Date(currentDate),
+            time: formattedTime
+          })
+
+          // increment current time by 30 minutes
+          currentDate.setMinutes(currentDate.getMinutes()+ 30)
+        }
+
+        setDocSlots(prev => ([...prev, timeSlots]))
+      }
+  }
 
   // to run fetchDocinfo when page gets load
   useEffect(()=>{
       fetchDocInfo()
   },[doctors,docId]) // any of these two data gets change then it will be executed
+
+  useEffect(()=>{
+    getAvailableSlots()
+  },[docInfo]) // when docinfo gets change then this function will be executed
+
+  useEffect(()=>{
+    console.log(docSlots)
+  },[docSlots])
+
+
   return docInfo && (
     <div className='mt-30 mx-4 sm:mx-[10%]'>
       {/* Doctors Detail */}
