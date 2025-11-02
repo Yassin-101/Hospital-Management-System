@@ -6,7 +6,7 @@ import { assets } from '../assets/assets'
 const Appointments = () => {
   
   const {docId} = useParams()
-  const {doctors} = useContext(AppContext)
+  const {doctors, currencySymbol} = useContext(AppContext)
 
   const [docInfo,setDocInfo] = useState(null) // to save docInfo
 
@@ -41,8 +41,8 @@ const Appointments = () => {
             <p className='flex items-center gap-1 text-sm font-medium mt-3 text-blue-500'>Biography</p>
             <p className='text-sm text-[#194f90] max-w-[700] mt-1'>{docInfo.about}</p>
           </div>
-          <p className='text-blue-800'>
-            Appointment fee: <span>{docInfo.fees}</span>
+          <p className='text-blue-800 font-medium mt-4'>
+            Appointment fee: <span><span className='mr-1'>{currencySymbol}</span>{docInfo.fees}</span>
           </p>
         </div>
       </div>
