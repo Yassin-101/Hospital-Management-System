@@ -13,6 +13,7 @@ import '../src/index.css'
 import Footer from './Components/Footer'
 
 const App = () => {
+  
   return (
     <div className=''>
       <Navbar/>
