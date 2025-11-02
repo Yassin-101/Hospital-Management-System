@@ -132,7 +132,7 @@ const Appointments = () => {
               return (
                 <div
                   key={index}
-                  className={`text-center py-6 min-w-[4rem] rounded-full cursor-pointer ${slotsIndex === index ? "bg-blue-300 text-white" : "border border-gray-200"}`}
+                  className={`text-center py-6 min-w-[4rem] rounded-full cursor-pointer ${slotsIndex === index ? "bg-blue-500 text-white" : "border border-gray-200"}`}
                   onClick={() => setSlotsIndex(index)}
                 >
                   <p>{dayLabel}</p>
@@ -143,7 +143,13 @@ const Appointments = () => {
           </div>
 
           {/* Times for selected day */}
-        
+         <div className=' flex items-center gap-3 w-full overflow-x-scroll mt-4'>
+          {docSlots.length && docSlots[slotsIndex].map((item,index)=>(
+            <p onClick={()=>setSlotsTime(item.time)} className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${item.time === slotsTime ? "bg-blue-500 text-white": "border-gray-300 text-gray-400"}`} key={index}>
+              {item.time.toLowerCase()}
+            </p>
+          ))}
+         </div>
         </div>
       </div>
     )
