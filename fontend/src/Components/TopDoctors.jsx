@@ -81,7 +81,7 @@ const TopDoctors = () => {
           {doctors.slice(0, 12).map((item, index) => (
             <div
               key={index}
-              onClick={() => navigate(`/appoipment/${item._id}`)}
+              onClick={() => navigate(`/appointments/${item._id}`)}
               className="doctor-card flex-shrink-0 w-[280px] bg-gradient-to-b from-blue-100 to-white rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:-translate-y-2 transition-all duration-500"
               style={{ scrollSnapAlign: "start" }}
             >
