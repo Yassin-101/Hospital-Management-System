@@ -9,4 +9,4 @@ const addDoctor = async(req,res)=>{
     }
 }
 
-export {addDoctor}
+module.exports = {addDoctor}
