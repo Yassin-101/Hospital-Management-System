@@ -51,10 +51,22 @@ const addDoctor = async(req,res)=>{
        await newDoctor.save()
 
        res.json({success:true,message:"doctor added"})
+
+     
     } catch (error) {
         console.log(error)
         res.json({success:false,message:error.message})
     }
 }
 
-module.exports = {addDoctor}
+  // API for admin login
+       const loginAdmin = async(req,res)=>{
+            try {
+                
+            } catch (error) {
+                 console.log(error)
+        res.json({success:false,message:error.message})
+            }
+       }
+
+module.exports = {addDoctor, loginAdmin}
