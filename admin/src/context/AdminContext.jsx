@@ -8,9 +8,9 @@ const AdminContextProvider = (props)=>{
      }
 
      return (
-        <AppContext.Provider value={value}>
+        <AdminContext.Provider value={value}>
             {props.children}
-        </AppContext.Provider>
+        </AdminContext.Provider>
      )
 }
 
