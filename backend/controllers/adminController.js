@@ -2,6 +2,7 @@ const validator = require('validator')
 const bycrypt = require('bcrypt')
 const cloudinary = require('cloudinary').v2;
 const doctorModel = require('../models/doctor')
+const jwt = require('jsonwebtoken')
 
 // api for adding doctor
 const addDoctor = async(req,res)=>{
@@ -62,7 +63,13 @@ const addDoctor = async(req,res)=>{
   // API for admin login
        const loginAdmin = async(req,res)=>{
             try {
-                
+                const {email,password} = req.body
+                if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+                    const token = jwt.sign(email + password,process.env.JWT_SECRET)
+                    res.json({success:true,token})
+                }else{
+                    res.json({success:false,message:"Invalid email and password"})
+                }
             } catch (error) {
                  console.log(error)
         res.json({success:false,message:error.message})
