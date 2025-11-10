@@ -14,6 +14,7 @@ connectCloudinary()
 
 
 const adminRouter = require('./routes/adminRoute')
+const doctorRouter = require('./routes/doctorRoute')
 
 
 //middlware
@@ -21,5 +22,6 @@ const adminRouter = require('./routes/adminRoute')
 
 //api endpoints
 app.use('/api/admin',adminRouter)
+app.use('/api/doctor',doctorRouter)
 
 module.exports = app
