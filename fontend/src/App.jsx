@@ -12,6 +12,7 @@ import Navbar from './Components/Navbar'
 import '../src/index.css'
 import Footer from './Components/Footer'
 import LoadingBar from './Components/LoadingBar'
+  import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
   //   const location = useLocation()
@@ -32,6 +33,7 @@ const App = () => {
   return (
     <div className=''>
       {/* <LoadingBar active={loading}/> */}
+      <ToastContainer/>
       <Navbar/>
       <Routes>
         <Route path='/' element={<Home/>}/>
