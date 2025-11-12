@@ -1,16 +1,23 @@
-import React, { useState, useRef, useLayoutEffect } from 'react'
+import React, { useState, useRef, useLayoutEffect, useContext } from 'react'
 import logo from '../assets/logo.png'
 import { assets } from '../assets/assets'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { AppContext } from '../Context/AppContext'
 
 const Navbar = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const navRef = useRef(null)
   const [navHeight, setNavHeight] = useState(0)
-  const [token, SetToken] = useState(true)
+  const { token, setToken } = useContext(AppContext)
   const [showMenu, setShowMeu] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+
+  const logout = ()=>{
+    setToken(false)
+    localStorage.removeItem('token')
+
+  }
 
   const isHomePage = location.pathname === '/'
 
@@ -72,7 +79,7 @@ const Navbar = () => {
                         navigate('my-profile')
                         setShowProfileMenu(false)
                       }}
-                      className="text-left hover:text-black hover:font-semibold"
+                      className=" cursor-pointer text-left hover:text-black hover:font-semibold"
                     >
                       My Profile
                     </button>
@@ -81,16 +88,16 @@ const Navbar = () => {
                         navigate('my-appointments')
                         setShowProfileMenu(false)
                       }}
-                      className="text-left hover:text-black hover:font-semibold"
+                      className=" cursor-pointer text-left hover:text-black hover:font-semibold"
                     >
                       My Appointments
                     </button>
                     <button
                       onClick={() => {
-                        SetToken(false)
+                       logout
                         setShowProfileMenu(false)
                       }}
-                      className="text-left hover:text-black hover:font-semibold"
+                      className=" cursor-pointer text-left hover:text-black hover:font-semibold"
                     >
                       Logout
                     </button>
@@ -100,7 +107,7 @@ const Navbar = () => {
             ) : (
               <button
                 onClick={() => navigate('/login')}
-                className="bg-white text-blue-500 px-5 py-2 rounded-full text-sm sm:text-lg hidden md:inline-block"
+                className="bg-white text-blue-500 px-5 cursor-pointer py-2 rounded-full text-sm sm:text-lg hidden md:inline-block"
               >
                 Create Account
               </button>
@@ -118,9 +125,8 @@ const Navbar = () => {
 
         {/* Mobile menu */}
         <div
-          className={`${
-            showMenu ? 'fixed w-full' : 'h-0 w-0'
-          } md:hidden right-0 bottom-0 top-0 z-40 overflow-hidden bg-white transition-all duration-300`}
+          className={`${showMenu ? 'fixed w-full' : 'h-0 w-0'
+            } md:hidden right-0 bottom-0 top-0 z-40 overflow-hidden bg-white transition-all duration-300`}
         >
           <div className="flex items-center justify-between px-5 py-6">
             <img onClick={() => navigate('/')} className="w-24" src={logo} alt="logo" />
