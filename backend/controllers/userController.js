@@ -1,73 +1,119 @@
-const validator = require('validator')
-const bycrypt = require('bcrypt')
-const userModel = require('../models/user')
-const jwt = require('jsonwebtoken')
+    const validator = require('validator')
+    const bycrypt = require('bcrypt')
+    const userModel = require('../models/user')
+    const jwt = require('jsonwebtoken')
+    const cloudinary = require('cloudinary').v2;
 
-// API to register user
-const registerUser = async(req,res)=>{
-    try {
-        const {name,email,password} = req.body
+    // API to register user
+    const registerUser = async(req,res)=>{
+        try {
+            const {name,email,password} = req.body
 
-        if(!name || !email || !password){
-            return res.json({success:false,message:"Missing Details"})
-        }
+            if(!name || !email || !password){
+                return res.json({success:false,message:"Missing Details"})
+            }
 
-        // validating email format
+            // validating email format
 
-        if(!validator.isEmail(email)){
-           return res.json({success:false,message:"enter a valid email"})
-        }
+            if(!validator.isEmail(email)){
+            return res.json({success:false,message:"enter a valid email"})
+            }
 
-        // validating strong password
+            // validating strong password
 
-           if(password.length < 8){
-           return res.json({success:false,message:"enter a strong password"})
-        }
+            if(password.length < 8){
+            return res.json({success:false,message:"enter a strong password"})
+            }
 
-        // hashing user password
-        const salt = await bycrypt.genSalt(10)
-        const hashedPassword = await bycrypt.hash(password,salt)
+            // hashing user password
+            const salt = await bycrypt.genSalt(10)
+            const hashedPassword = await bycrypt.hash(password,salt)
 
-        const userData = {
-            name,
-            email,
-            password:hashedPassword
-        }
+            const userData = {
+                name,
+                email,
+                password:hashedPassword
+            }
 
-        const newUser = new userModel(userData)
-        const user = await newUser.save()
-        
-        const token = jwt.sign({id:user._id}, process.env.JWT_SECRET)
-        res.json({success:true,token})
-
-    } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
-    }
-}
-
-// API for user login
-const loginUser = async (req,res)=>{
-    try {
-        const {email,password} = req.body
-        const user = await userModel.findOne({email})
-
-        if (!user) {
-         return res.json({success:false,message:'User does not exist'})
-        }
-
-        const isMatch = await bycrypt.compare(password,user.password)
-
-        if(isMatch){
-            const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
+            const newUser = new userModel(userData)
+            const user = await newUser.save()
+            
+            const token = jwt.sign({id:user._id}, process.env.JWT_SECRET)
             res.json({success:true,token})
-        }else{
-            res.json({success:false,message:'Invalid email and password'})
-        }
-    } catch (error) {
-         console.log(error)
-        res.json({success:false,message:error.message})
-    }
-}
 
-module.exports = {registerUser, loginUser}
+        } catch (error) {
+            console.log(error)
+            res.json({success:false,message:error.message})
+        }
+    }
+
+    // API for user login
+    const loginUser = async (req,res)=>{
+        try {
+            const {email,password} = req.body
+            const user = await userModel.findOne({email})
+
+            if (!user) {
+            return res.json({success:false,message:'User does not exist'})
+            }
+
+            const isMatch = await bycrypt.compare(password,user.password)
+
+            if(isMatch){
+                const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
+                res.json({success:true,token})
+            }else{
+                res.json({success:false,message:'Invalid email and password'})
+            }
+        } catch (error) {
+            console.log(error)
+            res.json({success:false,message:error.message})
+        }
+    }
+
+    // API to get user profile data
+    const getProfile =async (req,res)=>{
+        try {
+            const userId  = req.userId
+            const userData = await userModel.findById(userId).select('-password')
+            res.json({success:true,userData})
+        } catch (error) {
+            console.log(error)
+            res.json({success:false,message:error.message})
+        }
+    }
+
+    // API to update user profile
+   const updateProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { name, phone, address, dob, gender } = req.body;
+    const imageFile = req.file; // lowercase .file, not .File
+
+    if (!name || !phone || !address || !dob || !gender) {
+      return res.json({ success: false, message: "Data Missing" });
+    }
+
+    await userModel.findByIdAndUpdate(userId, {
+      name,
+      phone,
+      address: JSON.parse(address),
+      dob,
+      gender,
+    });
+
+    if (imageFile) {
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+      });
+      await userModel.findByIdAndUpdate(userId, { image: imageUpload.secure_url });
+    }
+
+    res.json({ success: true, message: "Profile Updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+    module.exports = {registerUser, loginUser , getProfile, updateProfile}
