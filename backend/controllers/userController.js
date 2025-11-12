@@ -46,4 +46,28 @@ const registerUser = async(req,res)=>{
     }
 }
 
-module.exports = {registerUser}
+// API for user login
+const loginUser = async (req,res)=>{
+    try {
+        const {email,password} = req.body
+        const user = await userModel.findOne({email})
+
+        if (!user) {
+         return res.json({success:false,message:'User does not exist'})
+        }
+
+        const isMatch = await bycrypt.compare(password,user.password)
+
+        if(isMatch){
+            const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
+            res.json({success:true,token})
+        }else{
+            res.json({success:false,message:'Invalid email and password'})
+        }
+    } catch (error) {
+         console.log(error)
+        res.json({success:false,message:error.message})
+    }
+}
+
+module.exports = {registerUser, loginUser}
