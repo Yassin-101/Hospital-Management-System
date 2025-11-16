@@ -122,7 +122,9 @@ const appointmentModel = require('../models/appointment');
 const bookAppointment = async(req,res)=>{
     try {
 
-        const {userId,docId,slotDate,slotTime} = req.body
+        const userId = req.userId; // ← GET FROM TOKEN
+    const { docId, slotDate, slotTime } = req.body;
+
         const docData = await doctorModel.findById(docId).select('-password')
 
         if(!docData.available){
@@ -155,9 +157,9 @@ const bookAppointment = async(req,res)=>{
         await newAppointment.save()
 
         // save new slots data in docData
-        await doctorModel.findByIdAndUpdate(docId,{slots_booked})
+        await doctorModel.findByIdAndUpdate(docId, { slots_booked });
 
-        res.json({success:true,message:"Appointment Booked"})
+    res.json({ success: true, message: "Appointment Booked" });
         
     } catch (error) {
          console.log(error);
