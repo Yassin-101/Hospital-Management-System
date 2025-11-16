@@ -23,7 +23,7 @@ const RelatedDoctors = ({speciality,docId}) => {
       <p className='sm:w-1/3 text-center text-sm'>Simply browse through our extensive list of trusted doctors.</p>
       <div className='w-full grid grid-cols-4 gap-4 pt-5 gap-y-6 px-3 sm:px-0'>
           {relDoc.slice(0,5).map((item,index)=>(
-            <div onClick={()=>{navigate(`/appointments/${item._id}`); scrollTo(0,0) }} className='border border-gray-400'>
+            <div key={index} onClick={()=>{navigate(`/appointments/${item._id}`); scrollTo(0,0) }} className='border border-gray-400'>
               <img className='bg-blue-50 cursor-pointer' src={item.image} alt="" />
                 <div className="p-4 text-center text-gray-900">
                 <p className="text-lg font-medium">{item.name}</p>

@@ -94,8 +94,8 @@ const Navbar = () => {
                     </button>
                     <button
                       onClick={() => {
-                       logout
-                        setShowProfileMenu(false)
+                       logout()
+                      setShowProfileMenu(false)
                       }}
                       className=" cursor-pointer text-left hover:text-black hover:font-semibold"
                     >
