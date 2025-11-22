@@ -5,8 +5,11 @@
 const doctorModel = require('../models/doctor');
 const appointmentModel = require('../models/appointment');
     const cloudinary = require('cloudinary').v2;
+
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+
+  
     
 
     // API to register user
@@ -223,6 +226,7 @@ const cancelAppointment = async(req,res)=>{
 
 
 
+
 // API to pay for appointment using Stripe
 const paymentStripe = async (req, res) => {
     try {
@@ -262,3 +266,17 @@ const paymentStripe = async (req, res) => {
 
 
     module.exports = {registerUser, loginUser , getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment, paymentStripe}
+=======
+const razorpayInstance = new razorpay({
+    key_id:'',
+    key_secret:''
+})
+
+// API to make payment of appointmnet using rayzor pay
+
+const paymentRayzorpay = (req,res)=>{
+
+}
+
+    module.exports = {registerUser, loginUser , getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment}
+
