@@ -5,6 +5,8 @@
 const doctorModel = require('../models/doctor');
 const appointmentModel = require('../models/appointment');
     const cloudinary = require('cloudinary').v2;
+    const razorpay = require('razorpay')
+    
 
     // API to register user
     const registerUser = async(req,res)=>{
@@ -214,6 +216,17 @@ const cancelAppointment = async(req,res)=>{
          console.log(error);
     res.json({ success: false, message: error.message });
     }
+}
+
+const razorpayInstance = new razorpay({
+    key_id:'',
+    key_secret:''
+})
+
+// API to make payment of appointmnet using rayzor pay
+
+const paymentRayzorpay = (req,res)=>{
+
 }
 
     module.exports = {registerUser, loginUser , getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment}
