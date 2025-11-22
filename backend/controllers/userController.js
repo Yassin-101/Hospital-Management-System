@@ -5,7 +5,8 @@
 const doctorModel = require('../models/doctor');
 const appointmentModel = require('../models/appointment');
     const cloudinary = require('cloudinary').v2;
-    const razorpay = require('razorpay')
+    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
     
 
     // API to register user
@@ -218,15 +219,46 @@ const cancelAppointment = async(req,res)=>{
     }
 }
 
-const razorpayInstance = new razorpay({
-    key_id:'',
-    key_secret:''
-})
+
 
 // API to make payment of appointmnet using rayzor pay
 
-const paymentRayzorpay = (req,res)=>{
+// API to pay for appointment using Stripe
+const paymentStripe = async (req, res) => {
+    try {
+        const userId = req.userId; // from auth middleware
+        const { appointmentId } = req.body;
 
-}
+        // 1. Get appointment
+        const appointmentData = await appointmentModel.findById(appointmentId);
+        if (!appointmentData || appointmentData.cancelled) {
+            return res.json({ success: false, message: "Appointment cancelled or not found" });
+        }
 
-    module.exports = {registerUser, loginUser , getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment}
+        // 2. Verify user
+        if (appointmentData.userId.toString() !== userId) {
+            return res.json({ success: false, message: "Unauthorized action" });
+        }
+
+        // 3. Create Stripe PaymentIntent
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(appointmentData.amount * 100), // amount in fils
+            currency: 'aed', // change if needed
+            metadata: {
+                appointmentId: appointmentData._id.toString(),
+                userId: userId
+            },
+            receipt: appointmentId
+        });
+
+        // 4. Send client secret to frontend
+        res.json({ success: true, clientSecret: paymentIntent.client_secret });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+
+    module.exports = {registerUser, loginUser , getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment, paymentStripe}
