@@ -221,7 +221,7 @@ const cancelAppointment = async(req,res)=>{
 
 
 
-// API to make payment of appointmnet using rayzor pay
+
 
 // API to pay for appointment using Stripe
 const paymentStripe = async (req, res) => {
