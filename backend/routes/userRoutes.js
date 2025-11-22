@@ -3,7 +3,6 @@ const express = require('express')
 const {registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment, paymentStripe} = require('../controllers/userController')
 
 
-
 const authUser = require('../middlewares/authUser')
 const upload = require('../middlewares/multer')
 
