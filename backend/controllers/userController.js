@@ -218,6 +218,11 @@ const cancelAppointment = async(req,res)=>{
     }
 }
 
+const razorpayInstance = new razorpay({
+    key_id:'',
+    key_secret:''
+})
+
 // API to make payment of appointmnet using rayzor pay
 
 const paymentRayzorpay = (req,res)=>{
