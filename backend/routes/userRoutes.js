@@ -1,6 +1,6 @@
 const express = require('express')
 
-const {registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment, paymentStripe} = require('../controllers/userController')
+const {registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment, paymentStripe, markAppointmentPaid} = require('../controllers/userController')
 
 
 
@@ -19,6 +19,7 @@ userRouter.get('/appointments',authUser,listAppointment)
 userRouter.post('/cancel-appointment',authUser,cancelAppointment)
 
 userRouter.post('/payment-stripe',authUser,paymentStripe)
+userRouter.post('/mark-paid',authUser,markAppointmentPaid)
 
 
 module.exports = userRouter

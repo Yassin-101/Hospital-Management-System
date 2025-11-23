@@ -5,6 +5,7 @@ const cors = require('cors')
 const multer = require('multer')
 const path = require('path')
 const connectCloudinary = require('./config/cloudinary')
+const bodyParser = require('body-parser');
 
 
 
@@ -25,5 +26,10 @@ const userRouter = require('./routes/userRoutes')
 app.use('/api/admin',adminRouter)
 app.use('/api/doctor',doctorRouter)
 app.use('/api/user',userRouter)
+// raw body parser for Stripe webhooks
+app.use(
+  '/api/stripe/webhook',
+  bodyParser.raw({ type: 'application/json' })
+);
 
 module.exports = app
