@@ -92,6 +92,12 @@ const Appointments = () => {
   }
 
   const bookAppointment = async () => {
+    // check if time is selected
+    if (!slotTime) {
+  toast.warn('Please select a time before booking')
+  return
+}
+
     if (!token) {
       toast.warn('Login to book appoinment')
       return navigate('/login')
