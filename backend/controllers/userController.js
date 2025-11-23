@@ -8,10 +8,6 @@ const appointmentModel = require('../models/appointment');
 
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-
-  
-    
-
     // API to register user
     const registerUser = async(req,res)=>{
         try {
@@ -156,7 +152,7 @@ const bookAppointment = async(req,res)=>{
         delete docData.slots_booked
 
         const appointmentData = {
-            userId,docId,userData,docData,amount:docData.fees,slotTime,slotDate,date: Date.now()
+            userId,docId,userData,docData,amount:docData.fees,slotTime,slotDate,date: Date.now(), payment: false
         }
 
         const newAppointment = new appointmentModel(appointmentData)
@@ -223,48 +219,85 @@ const cancelAppointment = async(req,res)=>{
 }
 
 
-
-
-
-
 // API to pay for appointment using Stripe
 const paymentStripe = async (req, res) => {
-    try {
-        const userId = req.userId; // from auth middleware
-        const { appointmentId } = req.body;
+  try {
+    const userId = req.userId; 
+    const { appointmentId } = req.body;
 
-        // 1. Get appointment
-        const appointmentData = await appointmentModel.findById(appointmentId);
-        if (!appointmentData || appointmentData.cancelled) {
-            return res.json({ success: false, message: "Appointment cancelled or not found" });
-        }
-
-        // 2. Verify user
-        if (appointmentData.userId.toString() !== userId) {
-            return res.json({ success: false, message: "Unauthorized action" });
-        }
-
-        // 3. Create Stripe PaymentIntent
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(appointmentData.amount * 100), // amount in fils
-            currency: 'aed', // change if needed
-            metadata: {
-                appointmentId: appointmentData._id.toString(),
-                userId: userId
-            },
-            receipt: appointmentId
-        });
-
-        // 4. Send client secret to frontend
-        res.json({ success: true, clientSecret: paymentIntent.client_secret });
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+    const appointmentData = await appointmentModel.findById(appointmentId);
+    if (!appointmentData || appointmentData.cancelled) {
+      return res.json({ success: false, message: "Appointment cancelled or not found" });
     }
+
+    if (appointmentData.userId.toString() !== userId) {
+      return res.json({ success: false, message: "Unauthorized action" });
+    }
+
+    // Create Stripe Checkout Session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'aed',
+            product_data: { name: `Appointment with ${appointmentData.docData.name}` },
+            unit_amount: Math.round(appointmentData.amount * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}/my-appointments?appointmentId=${appointmentId}&paid=true`,
+      cancel_url: `${process.env.FRONTEND_URL}/my-appointments`,
+    });
+
+    res.json({ success: true, url: session.url });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+// Stripe webhook to mark payment as completed
+const stripeWebhook = async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.rawBody, // you need raw body, not JSON parsed
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.log('Webhook signature verification failed.', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the event
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const appointmentId = session.metadata.appointmentId;
+
+    // mark appointment as paid
+    await appointmentModel.findByIdAndUpdate(appointmentId, { payment: true });
+    console.log(`Appointment ${appointmentId} marked as paid.`);
+  }
+
+  res.json({ received: true });
 };
 
+const markAppointmentPaid = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    await appointmentModel.findByIdAndUpdate(appointmentId, { payment: true });
+    res.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
-    module.exports = {registerUser, loginUser , getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment, paymentStripe}
+    module.exports = {registerUser, loginUser , getProfile, updateProfile, bookAppointment,listAppointment, cancelAppointment, paymentStripe, stripeWebhook, markAppointmentPaid}
 
 

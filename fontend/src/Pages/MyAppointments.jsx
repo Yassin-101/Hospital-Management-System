@@ -2,12 +2,16 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../Context/AppContext'
 import axios from 'axios'
 import {toast} from 'react-toastify'
+import {loadStripe} from '@stripe/stripe-js'
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const MyAppointments = () => {
 
   const { backendUrl, token, getDoctorsData } = useContext(AppContext)
 
   const [appointments, setAppointments] = useState([])
+   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const months = ["","Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
   const slotDateFormat = (slotDate)=>{
@@ -45,10 +49,61 @@ const MyAppointments = () => {
       toast.error(error.message)
     }
   }
+  const handlePaymentQuery = async () => {
+  const appointmentId = searchParams.get('appointmentId');
+  const paid = searchParams.get('paid');
+
+  if (appointmentId && paid === 'true') {
+    try {
+      // Update backend
+      await axios.post(
+        backendUrl + '/api/user/mark-paid',
+        { appointmentId },
+        { headers: { token } }
+      );
+
+      // Update local state so it immediately shows Paid
+      setAppointments(prev =>
+        prev.map(app =>
+          app._id === appointmentId ? { ...app, payment: true } : app
+        )
+      );
+
+      toast.success('Payment successful!');
+
+      // Remove query params without reloading
+      const url = window.location.pathname;
+      window.history.replaceState(null, '', url);
+
+    } catch (error) {
+      toast.error('Failed to mark payment');
+    }
+  }
+};
+
+
+const appointmentStripe = async (appointmentId) => {
+  try {
+    const { data } = await axios.post(
+      backendUrl + "/api/user/payment-stripe",
+      { appointmentId },
+      { headers: { token } }
+    );
+
+    if (data.success) {
+      // redirect to the Stripe-hosted checkout page
+      window.location.href = data.url;
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Payment failed");
+  }
+};
 
   useEffect(()=>{
     if (token) {
       getUserAppointments()
+      handlePaymentQuery()
     }
   },[token])
   return (
@@ -75,7 +130,8 @@ const MyAppointments = () => {
             <div></div>
 
             <div className='flex flex-col gap-2 justify-end'>
-              {!item.cancelled && <button className='text-sm cursor-pointer text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-blue-400 hover:text-white transition-all duration-300 '>Pay Online</button>}
+              {!item.cancelled && item.payment && <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50'>Paid</button>}
+              {!item.cancelled && !item.payment && <button onClick={()=>appointmentStripe(item._id)} className='text-sm cursor-pointer text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-blue-400 hover:text-white transition-all duration-300 '>Pay Online</button>}
               {!item.cancelled && <button onClick={()=>cancelAppointment(item._id)} className='text-sm cursor-pointer text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300'>Cancel appointment</button>}
               {item.cancelled && <button className='sm:min-w-48 py-2 border border-red-500 rounded text-red-500'>Appointment Cancelled</button>}
             </div>
