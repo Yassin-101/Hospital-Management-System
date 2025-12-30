@@ -1,4 +1,6 @@
 const doctorModel = require("../models/doctor")
+const bycrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
 
 const changeAvailability = async(req,res)=>{
 
@@ -28,4 +30,32 @@ const doctorList = async(req,res)=>{
     }
 }
 
-module.exports = {changeAvailability,doctorList}
+// API for doctor login
+
+const loginDoctor = async(req,res)=>{
+    try {
+
+        const {email, password} = req.body
+        const doctor = await doctorModel.findOne({email})
+
+        if(!doctor){
+            return res.json({success:false, message: "Invalid credentials"})
+        }
+
+        const isMatch = await bycrypt.compare(password, doctor.password)
+
+        if (isMatch) {
+            
+            const token = jwt.sign({id:doctor._id}, process.env.JWT_SECRET)
+            res.json({success:true,token})
+        }else{
+            res.json({success:false, message: "Invalid credentials"})
+        }
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false,message:error.message})
+    }
+}
+
+module.exports = {changeAvailability,doctorList, loginDoctor}
